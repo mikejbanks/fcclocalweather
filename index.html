@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Weather</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+window.onload = function(){
+	geoFindMe();
+}
+var latitude;
+var longitude;
+var temperaturekelvin;
+function geoFindMe() {
+    if(navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error, geoOptions);
+    } else {
+        alert("Geolocation services are not supported by your web browser.");
+    }
+}
+
+function success(position) {
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+	gettingJSON(latitude,longitude);
+}
+
+function error(error) {
+    alert("Unable to retrieve your location due to " + error.code + ": " + error.message);
+}
+
+var geoOptions = {
+    enableHighAccuracy: true,
+    maximumAge: 30000,
+    timeout: 27000
+};
+
+    function gettingJSON(latitude,longitude){
+       // document.write("jquery loaded");
+	   //console.log(latitude);
+        $.getJSON("http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&APPID=7163ad436dc63f8ee4d5789b889bde07",function(json){
+            temperaturekelvin=json.main.temp;
+			$("#json-location").text(json.name);
+			$("#json-temp").html(Math.round((json.main.temp*(9/5))-459.67)+"&deg;F");
+			$("#iconimage").attr('src',"http://openweathermap.org/img/w/"+json.weather[0].icon+".png");
+			$("#json-weather").text(json.weather[0].description);
+			$("#json-wind-speed").text(json.wind.speed);
+			$("#json-wind-degree").text(json.wind.deg);
+			if(temperaturekelvin<277.594){
+			$("#overallweather").attr('src',"cold.jpg");
+			}
+			else if(temperaturekelvin>277.594&&temperaturekelvin<294.261){
+			$("#overallweather").attr('src',"moderate.png");
+			}
+			else{
+			$("#overallweather").attr('src',"hot.png");
+			}
+		//	document.write(JSON.stringify(json));
+        });
+    }
+	
+	function celsiusChange(){
+	$("#json-temp").html(Math.round(temperaturekelvin-273.15)+"&deg;C");
+	};
+	
+	function fahreinheitChange(){
+	$("#json-temp").html(Math.round((temperaturekelvin*(9/5))-459.67)+"&deg;F");
+	};
+    </script>
+</head>
+<body>
+
+<ul>
+	  <li><b>Location:</b> <span id="json-location"></span></li><br/>	
+      <li><b>Temperature:</b> <span id="json-temp"></span></li><br/>
+	  <button id="Celsius" onclick="celsiusChange();">Celsius</button>
+	  <button id="Fahrenheit" onclick="fahreinheitChange();">Fahrenheit</button><br/>
+	  <img src="" id="iconimage"><br/>
+	  <li><b>Weather:</b> <span id="json-weather"></span></li><br/>
+	  <li><b>Wind:</b> <span id="json-wind-speed"></span> speed <span id="json-wind-degree"></span> degrees</li><br/><br/>
+	  <img src="" id="overallweather"><br/>
+</ul>
+</div>
+</body>
+</html>
