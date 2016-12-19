@@ -11,6 +11,7 @@ window.onload = function(){
 var latitude;
 var longitude;
 var temperaturekelvin;
+/*Gets current location.*/
 function geoFindMe() {
     if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error, geoOptions);
@@ -18,7 +19,7 @@ function geoFindMe() {
         alert("Geolocation services are not supported by your web browser.");
     }
 }
-
+/*Assign latitude and longitude to variables.*/
 function success(position) {
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
@@ -34,10 +35,8 @@ var geoOptions = {
     maximumAge: 30000,
     timeout: 27000
 };
-
+	/*Pull data from openweathermap.org API. Uses different images for different temperatures.*/
     function gettingJSON(latitude,longitude){
-       // document.write("jquery loaded");
-	   //console.log(latitude);
         $.getJSON("http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&APPID=7163ad436dc63f8ee4d5789b889bde07",function(json){
             temperaturekelvin=json.main.temp;
 			$("#json-location").text(json.name);
@@ -55,14 +54,14 @@ var geoOptions = {
 			else{
 			$("#overallweather").attr('src',"hot.png");
 			}
-		//	document.write(JSON.stringify(json));
         });
     }
-	
+	/*Changes to Celsius from Kelvin*/
 	function celsiusChange(){
 	$("#json-temp").html(Math.round(temperaturekelvin-273.15)+"&deg;C");
 	};
 	
+	/*Changes to Fahreinheit from Kelvin*/
 	function fahreinheitChange(){
 	$("#json-temp").html(Math.round((temperaturekelvin*(9/5))-459.67)+"&deg;F");
 	};
